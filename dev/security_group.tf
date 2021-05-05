@@ -35,17 +35,10 @@ resource "aws_security_group" "alb" {
   description = "security_group for web"
 
   ingress {
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port       = 433
-    to_port         = 433
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 433
+    to_port     = 433
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -69,11 +62,11 @@ resource "aws_security_group" "rds" {
   description = "security_group for web"
 
   ingress {
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    cidr_blocks     = ["0.0.0.0/0"]
-    security_group  = [aws_security_group.web.id]
+    from_port      = 3306
+    to_port        = 3306
+    protocol       = "tcp"
+    cidr_blocks    = ["0.0.0.0/0"]
+    security_group = [aws_security_group.web.id]
   }
 
   egress {
