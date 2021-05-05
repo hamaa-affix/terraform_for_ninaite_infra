@@ -51,10 +51,10 @@ resource "aws_route_table" "main" {
   vpc_id = aws_vpc.app.id
 
   lifecycle {
-        ignore_changes = [
-            route,
-        ]
-    }
+    ignore_changes = [
+      route,
+    ]
+  }
 
   tags = {
     Name = "${var.env}-${var.project}-main-routetable"
@@ -65,22 +65,22 @@ resource "aws_route_table" "main" {
 # router  route情報の追加
 #=====================================
 resource "aws_route" "default_gw" {
-  route_table_id          = aws_route_table.main.id
-  destination_cidr_block  = "0.0.0.0/0"
-  gateway_id              = aws_internet_gateway.main.id
+  route_table_id         = aws_route_table.main.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.main.id
 }
 
 #=========================================
 # route table association subnetの関連ずけ
 #=========================================
 resource "aws_route_table_association" "public" {
-  count           = 3
-  subnet_id       = aws_subnet.public[count.index].id
-  route_table_id  = aws_route_table.main.id
+  count          = 3
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.main.id
 }
 
 resource "aws_route_table_association" "private" {
-  count           = 3
-  subnet_id       = aws_subnet.private[count.index].id
-  route_table_id  = aws_route_table.main.id
+  count          = 3
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.main.id
 }
