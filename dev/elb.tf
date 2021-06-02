@@ -1,26 +1,30 @@
-resource "aws_lb" "test" {
-  name               = "test-lb-tf"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
+#========================
+#elb
+#=======================
+resource "aws_lb" "web" {
+  name            = "${var.env}-${var.project}-web-alb"
+  internal        = false
+  security_groups = [aws_security_group.alb.id]
   subnets = [
-    for subnet in aws_subnet.public :
+    for subnet in aws_subnet.app_env_public :
     subnet.id
   ]
 
-  enable_deletion_protection = true
-
   access_logs {
-    bucket  = aws_s3_bucket.lb_logs.bucket
-    prefix  = var.project
-    enabled = true
+    bucket = aws_s3_bucket.alb_logs.bucket
+    prefix = var.project
   }
 
   tags = {
-    Group       = var.project
-    Environment = var.env
+    Group      = var.project
+    Enviroment = var.env
   }
 }
+
+
+#================================
+#target group
+#================================
 
 resource "aws_alb_target_group" "web" {
   name        = "${var.env}-${var.project}-tg-web"
@@ -38,7 +42,7 @@ resource "aws_alb_target_group" "web" {
   health_check {
     healthy_threshold   = 5
     unhealthy_threshold = 2
-    path                = "/ping.php"
+    path                = "/healthcheck"
   }
 
   tags = {
@@ -47,13 +51,16 @@ resource "aws_alb_target_group" "web" {
   }
 }
 
+#======================================
+#listener
+#======================================
 resource "aws_lb_listener_rule" "web" {
   listener_arn = aws_lb_listener.web_443.arn
 
   condition {
     host_header {
       values = [
-        "www.${var.sub_domain}.${var.domain}"
+        var.domain
       ]
     }
   }
@@ -69,8 +76,7 @@ resource "aws_lb_listener" "web_443" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  //東京リージョンでのacm
-  certificate_arn = aws_acm_certificate.web.arn
+  certificate_arn   = aws_acm_certificate.web.arn
 
   default_action {
     type = "fixed-response"
@@ -81,4 +87,3 @@ resource "aws_lb_listener" "web_443" {
     }
   }
 }
-
