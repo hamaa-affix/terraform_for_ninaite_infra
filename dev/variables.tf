@@ -22,3 +22,7 @@ variable "domain" {
 variable "sub_domain" {
   default = "dev"
 }
+
+variable "rds_password" {
+  type = string
+}
