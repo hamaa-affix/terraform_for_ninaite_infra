@@ -1,7 +1,6 @@
 #============================
 #aurora cluster
 #============================
-
 resource "aws_rds_cluster" "aurora_cluster" {
   cluster_identifier              = "${var.env}-${var.project}-cluster"
   engine                          = "aurora-mysql"

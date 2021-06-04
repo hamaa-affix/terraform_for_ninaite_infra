@@ -7,7 +7,6 @@ data "aws_route53_zone" "main" {
 #===============================
 # records
 #===============================
-//sub domain
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "www.${var.sub_domain}.${var.domain}"
